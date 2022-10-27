@@ -8,6 +8,7 @@
 <h2>Virtual Terminal</h2>
 <hr/>
 
+<div class="alert alert-danger text-center d-none" id="card-messages"></div>
 <form
 method="post"
 action="/payment-succeeded"
@@ -31,7 +32,7 @@ novalidate=""
         <input type="email" name="cardholder-email" id="cardholder-email" class="form-control" required="" autocomplete="cardholder-email-new" />
     </div>
 
-    <!-- card # will be built by Stripe -->
+    <!-- Card Number will be built by Stripe -->
     <div class="mb-3">
         <label for="card-element" class="form-label">Credit Card</label>
         <div id="card-element" class="form-control"></div>
@@ -41,8 +42,12 @@ novalidate=""
 
     <hr/>
 
-    <a id="pay-button" href="javascript:void(0)" class="btn btn-primary" onclick="val()">Charge Card</a>
-
+    <a id="pay-button" href="javascript:void(0)" class="btn btn-primary" onclick="validation()">Charge Card</a>
+    <div id="processing-payment" class="text-center d-none">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
     
 </form>
 {{end}}
@@ -53,10 +58,19 @@ novalidate=""
     <script>
     let card;
     const stripe = Stripe("pk_test_51JCpYoIeFNhE9u8z0Dak87VfPbgqAr2aj1bZxeLMkaSa9xzMJQWafwNQHY0dOxeNbVDZh85kAXXH6fEYJFKZ5WB6004V33hqPh");
+    const cardMessages = document.getElementById("card-messages");
+    const payButton = document.getElementById("pay-button");
+    const processing = document.getElementById("processing-payment");
 
-    function val() {
-        // TODO: update with actual code
-        console.log("pay button script");
+    function validation() {
+        const form = document.getElementById("charge-form");
+        if (form.checkValidity() === false) {
+            this.event.preventDefault();
+            this.event.stopPropagation();
+            form.classList.add("was-validated");
+            return;
+        }
+        form.classList.add("was-validated");
     }
 
     (function() {
