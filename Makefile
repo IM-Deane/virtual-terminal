@@ -1,8 +1,4 @@
-STRIPE_SECRET=sk_test_51JCpYoIeFNhE9u8zofwtb77KeDoqzLe7u1INKOUIxuB5MLDwCu4b14W2PDi14XfsWa2vEfyl5JP61VmrtsW5fYiM00UbjUQx0H
-STRIPE_KEY=pk_test_51JCpYoIeFNhE9u8z0Dak87VfPbgqAr2aj1bZxeLMkaSa9xzMJQWafwNQHY0dOxeNbVDZh85kAXXH6fEYJFKZ5WB6004V33hqPh
-GOSTRIPE_PORT=4000
-API_PORT=4001
-DSN=root@tcp(localhost:3306)/widgets?parseTime=true&tls=false
+
 
 ## build: builds all binaries
 build: clean build_front build_back
