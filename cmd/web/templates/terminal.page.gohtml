@@ -71,6 +71,25 @@ novalidate=""
         processing.classList.remove("d-none")
     }
 
+    function showPayButtons() {
+        payButton.classList.remove("d-none");
+        processing.classList.add("d-none")
+    }
+
+    function showCardError(msg) {
+        cardMessages.classList.add("alert-danger");
+        cardMessages.classList.remove("alert-success");
+        cardMessages.classList.remove("d-none");
+        cardMessages.innerText = msg; // display error
+    }   
+
+    function showCardSucess() {
+        cardMessages.classList.remove("alert-danger");
+        cardMessages.classList.add("alert-success");
+        cardMessages.classList.remove("d-none");
+        cardMessages.innerText = "Transaction successful!";
+    }   
+
     function validation() {
         const form = document.getElementById("charge-form");
         if (form.checkValidity() === false) {
@@ -104,9 +123,11 @@ novalidate=""
                 // charge card
                 stripe.confirmCardPayment(
                     data.client_secret, {
-                        card: card,
-                        billing_details: {
-                            name: document.getElementById("cardholder-name").value,
+                        payment_method: {
+                            card: card,
+                            billing_details: {
+                                name: document.getElementById("cardholder-name").value,
+                            },
                         },
                     }
                 ).then((result) => {

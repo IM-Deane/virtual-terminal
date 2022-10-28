@@ -1,4 +1,8 @@
-
+STRIPE_SECRET=${STRIPE_SECRET}
+STRIPE_KEY=${STRIPE_KEY}
+GOSTRIPE_PORT=${GOSTRIPE_PORT}
+API_PORT=${API_PORT}
+DSN=${DSN}
 
 ## build: builds all binaries
 build: clean build_front build_back

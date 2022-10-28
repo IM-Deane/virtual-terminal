@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 const version = "1.0.0"
@@ -45,8 +47,15 @@ func (app *application) serve() error {
 	return srv.ListenAndServe()
 }
 
+
 func main() {
 	var cfg config
+
+	// load env file
+	envErr := godotenv.Load(".env")
+	if envErr != nil {
+		log.Fatalf("Error occured while loading .env file! Err: %s", envErr)
+	}
 
 	// setup
 	flag.IntVar(&cfg.port, "port", 4001, "Server port to listen on")
