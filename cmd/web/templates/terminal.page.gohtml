@@ -49,6 +49,10 @@ novalidate=""
         </div>
     </div>
     
+    <input type="hidden" name="payment-intent" id="payment-intent" />
+    <input type="hidden" name="payment-method" id="payment-method" />
+    <input type="hidden" name="payment-amount" id="payment-amount" />
+    <input type="hidden" name="payment-currency" id="payment-currency" />
 </form>
 {{end}}
 
@@ -77,6 +81,59 @@ novalidate=""
         }
         form.classList.add("was-validated");
         hidePayButton();
+
+        const amountToCharge = String(parseFloat(document.getElementById("amount").value) * 100);
+        const payload = {
+            amount: amountToCharge,
+            currency: "cad",
+        };
+
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        };
+
+        fetch("http://localhost:4001/api/payment-intent", requestOptions).then((response) => response.text).then(res => {
+            let data;
+            try {
+                data = JSON.parse(res);
+                // charge card
+                stripe.confirmCardPayment(
+                    data.client_secret, {
+                        card: card,
+                        billing_details: {
+                            name: document.getElementById("cardholder-name").value,
+                        },
+                    }
+                ).then((result) => {
+                    if (result.error) {
+                        // card declined or something went wrong
+                        showError(result.error.message);
+                        showPayButtons();
+                    } else if (result.paymentIntent) {
+                        if (result.paymentIntent.status === "succeeded") {
+                            // card has been charged
+                            document.getElementById("payment-method").value = result.paymentIntent.payment_method_types[0];
+                            document.getElementById("payment-intent").value = result.paymentIntent.id;
+                            document.getElementById("payment-amount").value = result.paymentIntent.amount;
+                            document.getElementById("payment-currency").value = result.paymentIntent.currency;
+                            // hide spinner
+                            processing.classList.add("d-none");
+                            showCardSucess();
+                            // TODO: now submit the form to generate recipet
+                        }
+                    }
+                }); 
+            } catch (err) {
+            console.log(err);
+            showCardError("Invalid response from payment gateway!");
+            showPayButtons();
+            }
+        })
     }
 
     (function() {
