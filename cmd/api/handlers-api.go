@@ -56,8 +56,8 @@ func (app *application) GetPaymentIntent(w http.ResponseWriter, r *http.Request)
 	if okay {
 		out, err := json.MarshalIndent(pi, "", "  ")
 		if err != nil {
-		app.errorLog.Println(err)
-		return
+			app.errorLog.Println(err)
+			return
 		}
 		
 		// send back success response
