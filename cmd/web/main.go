@@ -8,6 +8,8 @@ import (
 	"os"
 	"text/template"
 	"time"
+
+	"github.com/IM-Deane/virtual-terminal/internal/driver"
 )
 
 const version = "1.0.0"
@@ -56,6 +58,7 @@ func main() {
 	// setup
 	flag.IntVar(&cfg.port, "port", 4000, "Server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application env {development | production}")
+	flag.StringVar(&cfg.db.dsn, "dsn", os.Getenv("DB_CONN_STRING"), "DSN")
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
 
 	flag.Parse()
@@ -66,6 +69,13 @@ func main() {
 	// logger
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	// connect to db
+	conn, dbErr := driver.OpenDB(cfg.db.dsn)
+	if dbErr != nil {
+		errorLog.Fatal(dbErr)
+	}
+	defer conn.Close()
 
 	// cache
 	tc := make(map[string]*template.Template)

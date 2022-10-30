@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
+	"github.com/IM-Deane/virtual-terminal/internal/driver"
 )
 
 const version = "1.0.0"
@@ -52,14 +52,15 @@ func main() {
 	var cfg config
 
 	// load env file
-	envErr := godotenv.Load(".env")
-	if envErr != nil {
-		log.Fatalf("Error occured while loading .env file! Err: %s", envErr)
-	}
+	// envErr := godotenv.Load(".env")
+	// if envErr != nil {
+	// 	log.Fatalf("Error occured while loading .env file! Err: %s", envErr)
+	// }
 
 	// setup
 	flag.IntVar(&cfg.port, "port", 4001, "Server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application env {development | production|maintenance}")
+	flag.StringVar(&cfg.db.dsn, "dsn", os.Getenv("DB_CONN_STRING"), "DSN")
 
 	flag.Parse()
 
@@ -69,6 +70,13 @@ func main() {
 	// logger
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+
+	// connect to db
+	conn, dbErr := driver.OpenDB(cfg.db.dsn)
+	if dbErr != nil {
+		errorLog.Fatal(dbErr)
+	}
+	defer conn.Close()
 
 	// set app config
 	app := &application{
