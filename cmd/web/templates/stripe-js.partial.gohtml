@@ -2,7 +2,7 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script>
     let card;
-    const stripe = Stripe("pk_test_51JCpYoIeFNhE9u8z0Dak87VfPbgqAr2aj1bZxeLMkaSa9xzMJQWafwNQHY0dOxeNbVDZh85kAXXH6fEYJFKZ5WB6004V33hqPh");
+    const stripe = Stripe("{{.StripePublishableKey}}");
     const cardMessages = document.getElementById("card-messages");
     const payButton = document.getElementById("pay-button");
     const processing = document.getElementById("processing-payment");
@@ -57,7 +57,7 @@
             body: JSON.stringify(payload)
         };
 
-        fetch("http://localhost:4001/api/payment-intent", requestOptions)
+        fetch("{{.API}}/api/payment-intent", requestOptions)
         .then((response) => response.text())
         .then((res) => {
             let data;

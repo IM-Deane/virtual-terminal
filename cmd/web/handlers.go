@@ -8,13 +8,7 @@ import (
 
 
 func (app *application) VirtualTerminal(w http.ResponseWriter, r *http.Request) {
-	// add API key to context
-	stringMap := make(map[string]string)
-	stringMap["publishable_key"] = app.config.stripe.key
-
-	if err := app.renderTemplate(w, r, "terminal", &templateData{
-		StringMap: stringMap,
-	}, "stripe-js"); err != nil {
+	if err := app.renderTemplate(w, r, "terminal", &templateData{}, "stripe-js"); err != nil {
 		app.errorLog.Println(err)
 	}
 }
