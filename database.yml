@@ -1,0 +1,7 @@
+development:
+  dialect: postgres
+  database: widgets
+  user: tristandeane
+  password: MasterLock452!
+  host: 127.0.0.1
+  pool: 5
