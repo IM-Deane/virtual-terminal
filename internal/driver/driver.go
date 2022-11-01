@@ -1,19 +1,19 @@
 package driver
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jackc/pgx/v5"
 )
 
-func OpenDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("pgx", dsn)
+func OpenDB(dsn string) (*pgx.Conn, error) {
+	db, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	err = db.Ping()
+	err = db.Ping(context.Background())
 	if err != nil {
 		fmt.Println(err)
 		return nil, err

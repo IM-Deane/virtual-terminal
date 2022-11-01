@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"github.com/IM-Deane/virtual-terminal/internal/driver"
+	"github.com/IM-Deane/virtual-terminal/internal/models"
 	"github.com/joho/godotenv"
 )
 
@@ -31,6 +33,7 @@ type application struct {
 	infoLog *log.Logger
 	errorLog *log.Logger
 	version string
+	DB models.DBModel
 }
 
 func (app *application) serve() error {
@@ -77,7 +80,7 @@ func main() {
 	if dbErr != nil {
 		errorLog.Fatal(dbErr)
 	}
-	defer conn.Close()
+	defer conn.Close(context.Background())
 
 	infoLog.Println("Connected to database!")
 
@@ -87,6 +90,7 @@ func main() {
 		infoLog: infoLog,
 		errorLog: errorLog,
 		version: version,
+		DB: models.DBModel{DB: conn},
 	}
 
 	err := app.serve()

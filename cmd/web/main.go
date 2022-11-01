@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -84,7 +85,7 @@ func main() {
 	if dbErr != nil {
 		errorLog.Fatal(dbErr)
 	}
-	defer conn.Close()
+	defer conn.Close(context.Background())
 
 	// cache
 	tc := make(map[string]*template.Template)
