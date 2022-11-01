@@ -9,7 +9,10 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/joho/godotenv"
+
 	"github.com/IM-Deane/virtual-terminal/internal/driver"
+	"github.com/IM-Deane/virtual-terminal/internal/models"
 )
 
 const version = "1.0.0"
@@ -35,6 +38,7 @@ type application struct {
 	errorLog *log.Logger
 	templateCache map[string]*template.Template
 	version string
+	DB models.DBModel
 }
 
 func (app *application) serve() error {
@@ -53,12 +57,17 @@ func (app *application) serve() error {
 }
 
 func main() {
+	envErr := godotenv.Load(".env")
+	if envErr != nil {
+		log.Fatalf("Some error occured. Err: %s", envErr)
+	}
+
 	var cfg config
 
 	// setup
 	flag.IntVar(&cfg.port, "port", 4000, "Server port to listen on")
 	flag.StringVar(&cfg.env, "env", "development", "Application env {development | production}")
-	flag.StringVar(&cfg.db.dsn, "dsn", os.Getenv("DB_CONN_STRING"), "DSN")
+	flag.StringVar(&cfg.db.dsn, "dsn", os.Getenv("DATABASE_URL"), "DSN")
 	flag.StringVar(&cfg.api, "api", "http://localhost:4001", "URL to api")
 
 	flag.Parse()
@@ -87,6 +96,7 @@ func main() {
 		errorLog: errorLog,
 		templateCache: tc,
 		version: version,
+		DB: models.DBModel{DB: conn},
 	}
 
 	err := app.serve()

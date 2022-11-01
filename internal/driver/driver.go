@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func OpenDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("mysql", dsn)
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
 	}
