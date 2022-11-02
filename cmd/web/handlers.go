@@ -2,8 +2,9 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
-	"github.com/IM-Deane/virtual-terminal/internal/models"
+	"github.com/go-chi/chi/v5"
 )
 
 
@@ -45,13 +46,13 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 
 // ChargeOnce displays the page to buy a widget
 func (app *application) ChargeOnce(w http.ResponseWriter, r *http.Request) {
-	// default mocked widget
-	widget := models.Widget{
-		ID: 1,
-		Name: "Custom Widget",
-		Description: "A real nice widget",
-		InventoryLevel: 10,
-		Price: 1000,
+	id := chi.URLParam(r, "id")
+	widgetID, _ := strconv.Atoi(id)
+
+	widget, err := app.DB.GetWidget(widgetID)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
 	}
 
 	data := make(map[string]interface{})
