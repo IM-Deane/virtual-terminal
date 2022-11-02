@@ -247,7 +247,8 @@ CREATE TABLE public.widgets (
     inventory_level integer NOT NULL,
     price integer NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    image character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 
