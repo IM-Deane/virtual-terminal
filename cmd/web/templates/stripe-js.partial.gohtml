@@ -42,7 +42,7 @@
         form.classList.add("was-validated");
         hidePayButton();
 
-        const amountToCharge = String(parseFloat(document.getElementById("amount").value) * 100);
+        const amountToCharge = document.getElementById("amount").value;
         const payload = {
             amount: amountToCharge,
             currency: "cad",

@@ -18,8 +18,8 @@ autocomplete="off"
 novalidate=""
 >
     <div class="mb-3">
-        <label for="amount" class="form-label">Amount</label>
-        <input type="text" name="amount" id="amount" class="form-control" required="" autocomplete="amount-new" />
+        <label for="charge-amount" class="form-label">Amount</label>
+        <input type="text" id="charge-amount" class="form-control" required="" autocomplete="charge-amount-new" />
     </div>
 
     <div class="mb-3">
@@ -49,6 +49,7 @@ novalidate=""
         </div>
     </div>
     
+    <input type="hidden" name="amount" id="amount" />
     <input type="hidden" name="payment-intent" id="payment-intent" />
     <input type="hidden" name="payment-method" id="payment-method" />
     <input type="hidden" name="payment-amount" id="payment-amount" />
@@ -57,6 +58,17 @@ novalidate=""
 {{end}}
 
 {{define "js"}}
+<script>
+document.getElementById("charge-amount", (e) => {
+    if (e.target.value !== "") {
+        // a user entered an amount so we convert it from dollars to cents
+        document.getElementById("amount").value = e.target.value * 100;
+    } else {
+        // otherwise we simply set amount to 0
+        document.getElementById("amount").value = 0;
+    }
+});
+</script>
 {{template "stripe-js" . }}
     
 {{end}}
