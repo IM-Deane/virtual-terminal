@@ -8,12 +8,12 @@
     {{/* Wow what a sexy payment form!  */}}
     <h2 class="mt-5">Payment Succeeded</h2>
     </hr>
-    <p>Payment Intent: {{index .Data "paymentIntent"}}</p>
-    <p>Cardholder: {{index .Data "cardholder"}}</p>
+    <p>Payment Intent: {{index .Data "payment_intent"}}</p>
+    <p>Customer Name: {{index .Data "first_name"}} {{index .Data "last_name"}}</p>
     <p>Email: {{index .Data "email"}}</p>
-    <p>Method: {{index .Data "paymentMethod"}}</p>
-    <p>Amount: {{index .Data "paymentAmount"}}</p>
-    <p style="text-transform:uppercase;">Currency: {{index .Data "paymentCurrency"}}</p>
+    <p>Method: {{index .Data "payment_method"}}</p>
+    <p>Amount: {{index .Data "payment_amount"}}</p>
+    <p style="text-transform:uppercase;">Currency: {{index .Data "payment_currency"}}</p>
     <p>Last Four: {{index .Data "last_four"}}</p>
     <p>Bank Return Code: {{index .Data "bank_return_code"}}</p>
     <p>Expiry Date: {{index .Data "expiry_month"}}/{{index .Data "expiry_year"}}</p>
