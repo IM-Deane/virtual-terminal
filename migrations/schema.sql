@@ -35,6 +35,44 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: customers; Type: TABLE; Schema: public; Owner: tristandeane
+--
+
+CREATE TABLE public.customers (
+    id integer NOT NULL,
+    first_name character varying(255) NOT NULL,
+    last_name character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+    created_at timestamp without time zone DEFAULT now() NOT NULL,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.customers OWNER TO tristandeane;
+
+--
+-- Name: customers_id_seq; Type: SEQUENCE; Schema: public; Owner: tristandeane
+--
+
+CREATE SEQUENCE public.customers_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.customers_id_seq OWNER TO tristandeane;
+
+--
+-- Name: customers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: tristandeane
+--
+
+ALTER SEQUENCE public.customers_id_seq OWNED BY public.customers.id;
+
+
+--
 -- Name: orders; Type: TABLE; Schema: public; Owner: tristandeane
 --
 
@@ -46,7 +84,8 @@ CREATE TABLE public.orders (
     quantity integer NOT NULL,
     amount integer NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    customer_id integer NOT NULL
 );
 
 
@@ -169,7 +208,9 @@ CREATE TABLE public.transactions (
     bank_return_code character varying(255) NOT NULL,
     transaction_status_id integer NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    expiry_month integer DEFAULT 0 NOT NULL,
+    expiry_year integer DEFAULT 0 NOT NULL
 );
 
 
@@ -277,6 +318,13 @@ ALTER SEQUENCE public.widgets_id_seq OWNED BY public.widgets.id;
 
 
 --
+-- Name: customers id; Type: DEFAULT; Schema: public; Owner: tristandeane
+--
+
+ALTER TABLE ONLY public.customers ALTER COLUMN id SET DEFAULT nextval('public.customers_id_seq'::regclass);
+
+
+--
 -- Name: orders id; Type: DEFAULT; Schema: public; Owner: tristandeane
 --
 
@@ -316,6 +364,14 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 --
 
 ALTER TABLE ONLY public.widgets ALTER COLUMN id SET DEFAULT nextval('public.widgets_id_seq'::regclass);
+
+
+--
+-- Name: customers customers_pkey; Type: CONSTRAINT; Schema: public; Owner: tristandeane
+--
+
+ALTER TABLE ONLY public.customers
+    ADD CONSTRAINT customers_pkey PRIMARY KEY (id);
 
 
 --
@@ -379,6 +435,14 @@ ALTER TABLE ONLY public.widgets
 --
 
 CREATE UNIQUE INDEX schema_migration_version_idx ON public.schema_migration USING btree (version);
+
+
+--
+-- Name: orders orders_customers_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: tristandeane
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_customers_id_fk FOREIGN KEY (customer_id) REFERENCES public.customers(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
