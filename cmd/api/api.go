@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -80,7 +79,7 @@ func main() {
 	if dbErr != nil {
 		errorLog.Fatal(dbErr)
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
 
 	infoLog.Println("Connected to database!")
 

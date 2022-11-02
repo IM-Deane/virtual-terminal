@@ -2,14 +2,13 @@ package models
 
 import (
 	"context"
+	"database/sql"
 	"time"
-
-	"github.com/jackc/pgx/v5"
 )
 
 // DBModel is the type for database connection values
 type DBModel struct {
-	DB *pgx.Conn
+	DB *sql.DB
 }
 
 // Models is the wrapper for all models
@@ -18,7 +17,7 @@ type Models struct {
 }
 
 // NewModels returns a model type with database connection pool
-func NewModels(db *pgx.Conn) Models {
+func NewModels(db *sql.DB) Models {
 	return Models{
 		DB: DBModel{DB: db},
 	}
@@ -108,13 +107,13 @@ func (m *DBModel) GetWidget(id int) (Widget, error) {
 
 	var widget Widget
 
-	row := m.DB.QueryRow(ctx, `
+	row := m.DB.QueryRowContext(ctx, `
 	select
 		id, name, description, inventory_level, price, coalesce(image, ''),
 		created_at, updated_at
 	from
 		widgets
-	where id=$1`, id)
+	where id = ?`, id)
 	err := row.Scan(
 		&widget.ID,
 		&widget.Name,
@@ -132,8 +131,8 @@ func (m *DBModel) GetWidget(id int) (Widget, error) {
 	return widget, nil
 }
 
-// InsertTransaction inserts a new txn into db and returns true if successful
-func (m *DBModel) InsertTransaction(txn Transaction) (bool, error) {
+// InsertTransaction inserts a new txn into db and returns the txn id
+func (m *DBModel) InsertTransaction(txn Transaction) (int, error) {
 	// timeout after 3 seconds
 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
 	defer cancel()
@@ -145,7 +144,7 @@ func (m *DBModel) InsertTransaction(txn Transaction) (bool, error) {
 		values (?, ?, ?, ?, ?, ?, ?)
 	`
 
-	result, err := m.DB.Exec(
+	result, err := m.DB.ExecContext(
 		ctx,
 		stmt,
 		txn.Amount,
@@ -157,15 +156,20 @@ func (m *DBModel) InsertTransaction(txn Transaction) (bool, error) {
 		time.Now(), // updated_at
 	)
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
-	return result.Insert(), nil
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
 }
 
 
-// InsertOrder inserts a new order into db and returns true if successful
-func (m *DBModel) InsertOrder(order Order) (bool, error) {
+// InsertOrder inserts a new order into db and returns the order id
+func (m *DBModel) InsertOrder(order Order) (int, error) {
 	// timeout after 3 seconds
 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
 	defer cancel()
@@ -177,7 +181,7 @@ func (m *DBModel) InsertOrder(order Order) (bool, error) {
 		values (?, ?, ?, ?, ?, ?, ?)
 	`
 
-	result, err := m.DB.Exec(
+	result, err := m.DB.ExecContext(
 		ctx,
 		stmt,
 		order.WidgetID,
@@ -189,15 +193,20 @@ func (m *DBModel) InsertOrder(order Order) (bool, error) {
 		time.Now(), // updated_at
 	)
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
-	return result.Insert(), nil
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
 }
 
 
-// InsertCustomer inserts a new customer into db and returns true if successful
-func (m *DBModel) InsertCustomer(c Customer) (bool, error) {
+// InsertCustomer inserts a new customer into db and returns customer id
+func (m *DBModel) InsertCustomer(c Customer) (int, error) {
 	// timeout after 3 seconds
 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
 	defer cancel()
@@ -208,7 +217,7 @@ func (m *DBModel) InsertCustomer(c Customer) (bool, error) {
 		values (?, ?, ?, ?, ?)
 	`
 
-	result, err := m.DB.Exec(
+	result, err := m.DB.ExecContext(
 		ctx,
 		stmt,
 		c.FirstName,
@@ -218,8 +227,13 @@ func (m *DBModel) InsertCustomer(c Customer) (bool, error) {
 		time.Now(), // updated_at
 	)
 	if err != nil {
-		return false, err
+		return 0, err
 	}
 
-	return result.Insert(), nil
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(id), nil
 }
