@@ -5,16 +5,18 @@
 {{end}}
 
 {{define "content"}}
-    {{/* Wow what a sexy payment form!  */}}
+    {{/* get transaction data from session */}}
+    {{$txn := index .Data "txn"}}
+
     <h2 class="mt-5">Payment Succeeded</h2>
     </hr>
-    <p>Payment Intent: {{index .Data "payment_intent"}}</p>
-    <p>Customer Name: {{index .Data "first_name"}} {{index .Data "last_name"}}</p>
-    <p>Email: {{index .Data "email"}}</p>
-    <p>Method: {{index .Data "payment_method"}}</p>
-    <p>Amount: {{index .Data "payment_amount"}}</p>
-    <p style="text-transform:uppercase;">Currency: {{index .Data "payment_currency"}}</p>
-    <p>Last Four: {{index .Data "last_four"}}</p>
-    <p>Bank Return Code: {{index .Data "bank_return_code"}}</p>
-    <p>Expiry Date: {{index .Data "expiry_month"}}/{{index .Data "expiry_year"}}</p>
+    <p>Payment Intent: {{$txn.PaymentIntentID}}</p>
+    <p>Customer Name: {{$txn.FirstName}} {{$txn.LastName}}</p>
+    <p>Email: {{$txn.Email}}}</p>
+    <p>Method: {{$txn.PaymentMethodID}}</p>
+    <p>Amount: {{$txn.PaymentAmount}}}</p>
+    <p style="text-transform:uppercase;">Currency: {{$txn.PaymentCurrency}}</p>
+    <p>Last Four: {{$txn.LastFour}}</p>
+    <p>Bank Return Code: {{$txn.BankReturnCode}}</p>
+    <p>Expiry Date: {{$txn.ExpiryMonth}}/{{$txn.ExpiryYear}}</p>
 {{end}}

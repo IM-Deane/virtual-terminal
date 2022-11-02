@@ -61,7 +61,7 @@ func (app *application) serve() error {
 }
 
 func main() {
-	gob.Register(map[string]interface{}{})
+	gob.Register(TransactionData{})
 
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
