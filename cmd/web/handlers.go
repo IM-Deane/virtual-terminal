@@ -174,6 +174,38 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 	http.Redirect(w, r, "/receipt", http.StatusSeeOther)
 }
 
+// VirtualTerminalPaymentSucceeded displays the recipet page for virtual terminal txns
+func (app *application) VirtualTerminalPaymentSucceeded(w http.ResponseWriter, r *http.Request) {
+	txnData, err := app.GetTransactionData(r)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	// create new transaction
+	txn := models.Transaction{
+		Amount: txnData.PaymentAmount,
+		Currency: txnData.PaymentCurrency,
+		LastFour: txnData.LastFour,
+		ExpiryMonth: txnData.ExpiryMonth,
+		ExpiryYear: txnData.ExpiryYear,
+		BankReturnCode: txnData.BankReturnCode,
+		PaymentIntent: txnData.PaymentIntentID,
+		PaymentMethod: txnData.PaymentMethodID,
+		TransactionStatusID: 2, // transaction_status = "cleared"
+	}
+	_, err = app.SaveTransaction(txn)
+	if err != nil {
+		app.errorLog.Println(err)
+		return
+	}
+
+	// write receipt data to session
+	app.Session.Put(r.Context(), "receipt", txnData)
+	// redirect user to new page
+	http.Redirect(w, r, "/virtual-terminal-receipt", http.StatusSeeOther)
+}
+
 // Receipt renders the receipt page after credit card purchase
 func (app *application) Receipt(w http.ResponseWriter, r *http.Request) {
 	// get transaction data from session and to template map
@@ -184,6 +216,22 @@ func (app *application) Receipt(w http.ResponseWriter, r *http.Request) {
 	app.Session.Remove(r.Context(), "receipt")
 
 	if err := app.renderTemplate(w, r, "receipt", &templateData{
+		Data: data,
+	}); err != nil {
+		app.errorLog.Println(err)
+	}
+}
+
+// VirtualTerminalReceipt renders the VirtualTerminalReceipt page after credit card purchase
+func (app *application) VirtualTerminalReceipt(w http.ResponseWriter, r *http.Request) {
+	// get transaction data from session and to template map
+	txn := app.Session.Get(r.Context(), "receipt").(TransactionData)
+	data := make(map[string]interface{})
+	data["txn"] = txn
+
+	app.Session.Remove(r.Context(), "receipt")
+
+	if err := app.renderTemplate(w, r, "virtual-terminal-receipt", &templateData{
 		Data: data,
 	}); err != nil {
 		app.errorLog.Println(err)

@@ -11,7 +11,7 @@
 <div class="alert alert-danger text-center d-none" id="card-messages"></div>
 <form
 method="post"
-action="/payment-succeeded"
+action="/virtual-terminal-payment-succeeded"
 name="charge-form" id="charge-form"
 class="d-block needs-validation charge-form"
 autocomplete="off"
@@ -59,10 +59,10 @@ novalidate=""
 
 {{define "js"}}
 <script>
-document.getElementById("charge-amount", (e) => {
+document.getElementById("charge-amount").addEventListener("change", (e) => {
     if (e.target.value !== "") {
         // a user entered an amount so we convert it from dollars to cents
-        document.getElementById("amount").value = e.target.value * 100;
+        document.getElementById("amount").value = parseInt(e.target.value * 100, 10);
     } else {
         // otherwise we simply set amount to 0
         document.getElementById("amount").value = 0;
