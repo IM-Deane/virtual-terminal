@@ -8,13 +8,21 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// Home displays the home page
+func (app *application) Home(w http.ResponseWriter, r *http.Request) {
+	if err := app.renderTemplate(w, r, "home", &templateData{}); err != nil {
+		app.errorLog.Println(err)
+	}
+}
 
+// VirtualTerminal displays the home page
 func (app *application) VirtualTerminal(w http.ResponseWriter, r *http.Request) {
 	if err := app.renderTemplate(w, r, "terminal", &templateData{}, "stripe-js"); err != nil {
 		app.errorLog.Println(err)
 	}
 }
 
+// PaymentSucceeded displays the recipet page after purchasing a widget
 func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
