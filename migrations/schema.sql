@@ -210,7 +210,9 @@ CREATE TABLE public.transactions (
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     expiry_month integer DEFAULT 0 NOT NULL,
-    expiry_year integer DEFAULT 0 NOT NULL
+    expiry_year integer DEFAULT 0 NOT NULL,
+    payment_intent character varying(255) DEFAULT ''::character varying NOT NULL,
+    payment_method character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 
