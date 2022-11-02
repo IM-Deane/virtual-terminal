@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"flag"
 	"fmt"
 	"log"
@@ -60,6 +61,8 @@ func (app *application) serve() error {
 }
 
 func main() {
+	gob.Register(map[string]interface{}{})
+
 	envErr := godotenv.Load(".env")
 	if envErr != nil {
 		log.Fatalf("Some error occured. Err: %s", envErr)

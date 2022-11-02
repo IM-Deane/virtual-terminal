@@ -109,7 +109,7 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 		TransactionID: txnID,
 		CustomerID: customerID,
 		StatusID: 1, // statuses.cleared
-		Quantity: 1, // TODO: can only buy one for nows
+		Quantity: 1, // TODO: can only buy one for now
 		Amount: amount,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -134,15 +134,25 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 	data["expiry_year"] = expiryYear
 	data["bank_return_code"] = pi.Charges.Data[0].ID
 
-	// TODO: should write this data to session andd redirect user to new page
-	// this avoids duplicate form submissions
+	// add receipt data to session
+	app.Session.Put(r.Context(), "receipt", data)
 
-	if err := app.renderTemplate(w, r, "succeeded", &templateData{
+	// redirect user to new page
+	http.Redirect(w, r, "/receipt", http.StatusSeeOther)
+}
+
+// Receipt renders the receipt page after credit card purchase
+func (app *application) Receipt(w http.ResponseWriter, r *http.Request) {
+	data := app.Session.Get(r.Context(), "receipt").(map[string]interface{})
+	app.Session.Remove(r.Context(), "receipt")
+
+	if err := app.renderTemplate(w, r, "receipt", &templateData{
 		Data: data,
 	}); err != nil {
 		app.errorLog.Println(err)
 	}
 }
+
 
 // SaveCustomer handler that saves a customer and returns its id
 func (app *application) SaveCustomer(firstName string, lastName string, email string) (id int, err error) {
