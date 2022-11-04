@@ -291,7 +291,9 @@ CREATE TABLE public.widgets (
     price integer NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
-    image character varying(255) DEFAULT ''::character varying NOT NULL
+    image character varying(255) DEFAULT ''::character varying NOT NULL,
+    is_recurring boolean DEFAULT false NOT NULL,
+    plan_id character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 
