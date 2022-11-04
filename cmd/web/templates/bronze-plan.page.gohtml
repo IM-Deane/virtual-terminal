@@ -129,12 +129,19 @@ Bronze Plan
         if (result.error) {
             showCardError(result.error.message);
         } else {
-            // create a customer and subscribe to plan
+            // get customer details from submission and subscribe to plan
             const payload = {
                 plan: "{{$widget.PlanID}}",
+                product_id: document.getElementById("product-id").value,
                 payment_method: result.paymentMethod.id,
                 email: document.getElementById("cardholder-email").value,
                 last_four: result.paymentMethod.card.last4,
+                card_brand: result.paymentMethod.card.brand,
+                exp_month: result.paymentMethod.card.exp_month,
+                exp_year: result.paymentMethod.card.exp_year,
+                first_name: document.getElementById("first-name").value,
+                last_name: document.getElementById("last-name").value,
+                amount: document.getElementById("amount").value,
             }
 
             const requestOptions = {
