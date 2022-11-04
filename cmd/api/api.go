@@ -81,8 +81,6 @@ func main() {
 	}
 	defer conn.Close()
 
-	infoLog.Println("Connected to database!")
-
 	// set app config
 	app := &application{
 		config: cfg,
