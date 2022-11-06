@@ -276,8 +276,18 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// TODO: validate passwordl send error if invalid
-
+	// validate password; send error if invalid
+	validPassword, err := app.passwordMatches(user.Password, userInput.Password)
+	if err != nil {
+		app.invalidCredentials(w)
+		return
+	}
+	
+	// correct email but potentially invalid password
+	if !validPassword {
+		app.invalidCredentials(w)
+		return
+	}
 	// TODO: generate Auth token
 
 	// send response
