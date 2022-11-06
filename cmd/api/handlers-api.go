@@ -254,3 +254,41 @@ func (app *application) SaveOrder(order models.Order) (id int, err error) {
 	}
 	return id, nil
 }
+
+// CreateAuthToken generates auth token for user
+func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) {
+	var userInput struct {
+		Email string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	// read user input
+	err := app.readJSON(w, r, &userInput)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	// get user from DB by email; send error if invalid
+	user, err := app.DB.GetUserByEmail(userInput.Email)
+	if err != nil {
+		app.invalidCredentials(w)
+		return
+	}
+
+	// TODO: validate passwordl send error if invalid
+
+	// TODO: generate Auth token
+
+	// send response
+
+	var payload struct {
+		Error bool `json:"error"`
+		Message string `json:"message"`
+	}
+	payload.Error = false
+	payload.Message = "Success!"
+
+	// send back response
+	_ = app.writeJSON(w, http.StatusOK, payload)
+}
